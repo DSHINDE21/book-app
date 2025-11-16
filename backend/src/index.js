@@ -8,7 +8,6 @@ import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// middleware
 app.use(cors());
 app.use(express.json()); // parses JSON request bodies
 app.use(express.urlencoded({ extended: true })); // parses form data
