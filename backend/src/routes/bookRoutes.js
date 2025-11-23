@@ -59,15 +59,15 @@ router.post("/", protectRoute, async (req, res) => {
 // fetch("http://localhost:3000/api/books?page=3&limit=5")
 router.get("/", async (req, res) => {
   try {
-    const page = req.query.page || 1;
-    const limit = req.query.limit || 5;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
 
     const books = await Book.find()
-      .sort(createdAt - 1) // desc order
+      .sort({ createdAt: -1 }) // desc order
       .skip(skip)
       .limit(limit)
-      .populate("user", " username profileImage");
+      .populate("user", "username profileImage");
 
     const totalBooks = await Book.countDocuments();
 
@@ -111,8 +111,8 @@ router.delete("/:id", protectRoute, async (req, res) => {
     }
 
     // delete image from cloudinary
-    // sample url: https://res.cloudanary.com/image/upload/v188383849/qhuruuejhe.png ...
-    if ((book.image && book, image.includes("cloudanary"))) {
+    // sample url: https://res.cloudinary.com/image/upload/v188383849/qhuruuejhe.png ...
+    if (book.image && book.image.includes("cloudinary")) {
       try {
         const publicId = book.image.split("/").pop().split(".")[0];
         await cloudinary.uploader.destroy(publicId);
