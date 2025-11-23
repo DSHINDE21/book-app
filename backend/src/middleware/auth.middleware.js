@@ -4,12 +4,21 @@ import User from "../models/User.js";
 const protectRoute = async (req, res, next) => {
   try {
     //get token
-    const token = req.header("Authorization").replace("Bearer", "");
+    const authHeader = req.header("Authorization");
 
-    if (!token)
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res
         .status(401)
         .json({ message: "No authentication token, access denied" });
+    }
+
+    const token = authHeader.replace("Bearer ", "").trim();
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "No authentication token, access denied" });
+    }
 
     // verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -17,9 +26,10 @@ const protectRoute = async (req, res, next) => {
     // find user
     const user = await User.findById(decoded.userId).select("-password");
 
-    if (!user) return res.status(401).json({ message: "Token in not valid" });
+    if (!user) return res.status(401).json({ message: "Token is not valid" });
 
     req.user = user;
+    req.user_id = user._id; // Also set user_id for consistency with bookRoutes
 
     next();
   } catch (error) {

@@ -20,6 +20,16 @@ router.post("/", protectRoute, async (req, res) => {
       return res.status(400).json({ message: "Please provide all fields" });
     }
 
+    // Convert rating to number if it's a string
+    const ratingNumber =
+      typeof rating === "string" ? parseInt(rating, 10) : Number(rating);
+
+    if (isNaN(ratingNumber) || ratingNumber < 1 || ratingNumber > 5) {
+      return res
+        .status(400)
+        .json({ message: "Rating must be a number between 1 and 5" });
+    }
+
     //upload the image to cloudinary
     // save to database
     const uploadResponse = await cloudinary.uploader.upload(image);
@@ -28,7 +38,7 @@ router.post("/", protectRoute, async (req, res) => {
     const newBook = new Book({
       title,
       caption,
-      rating,
+      rating: ratingNumber,
       image: imageUrl,
       user: req.user_id, // protected req
     });
@@ -37,8 +47,10 @@ router.post("/", protectRoute, async (req, res) => {
 
     res.status(201).json(newBook);
   } catch (error) {
-    console.log("Error creating a book", error);
-    res.status(500).json({ message: error.message || "Internal server error" });
+    res.status(500).json({
+      message: error.message || "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 });
 
