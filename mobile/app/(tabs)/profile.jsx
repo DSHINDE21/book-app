@@ -16,8 +16,6 @@ import LogoutButton from "../../components/LogoutButton";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
 import { Image } from "expo-image";
-import { col } from "framer-motion/m";
-import { color } from "framer-motion";
 
 export default function Profile() {
   const router = useRouter();
