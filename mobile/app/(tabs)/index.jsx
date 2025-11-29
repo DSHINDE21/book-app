@@ -95,7 +95,6 @@ export default function Home() {
   );
 
   const renderRatingStars = (rating) => {
-    console.log("rating", rating);
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
